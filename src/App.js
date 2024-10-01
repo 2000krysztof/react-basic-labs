@@ -1,7 +1,9 @@
 import logo from './logo.svg';
 import './App.css';
 import Task from "./components/Task"
+import AddTaskForm from './components/Form';
 import React, {useState} from "react"
+import { v4 as uuidv4 } from 'uuid';
 
 function App() {
 
@@ -26,8 +28,44 @@ function App() {
 		setTaskState({tasks});
 	} 
 
+	const [ formState, setFormState ] = useState({
+		title: "",
+		description: "",
+		deadline: ""
+	});
+
+	const formChangeHandler = (event) => {
+		let form = {...formState};
+
+		switch(event.target.name) {
+			case "title":
+				form.title = event.target.value;
+				break;
+			case "description":
+				form.description = event.target.value;
+				break;
+			case "deadline":
+				form.deadline = event.target.value;
+				break;
+			default:
+				form = formState;
+		}
+		console.log(formState);
+		setFormState(form);
+	}
+	const formSubmitHandler = (event) => {
+		event.preventDefault();
+
+		const tasks = [...taskState.tasks];
+		const form = {...formState};
+
+		form.id = uuidv4();
+
+		tasks.push(form);
+		setTaskState({tasks});
+	}
 	return (
-		<div className="App">
+		<div className="container">
 		<h1>Tasky</h1>
 		{taskState.tasks.map((task, index) => (              
 			<Task 
@@ -40,6 +78,7 @@ function App() {
 			key={task.id}
 			/>
 		))} 
+		<AddTaskForm submit={formSubmitHandler} change={formChangeHandler} />
 		</div>
 	);
 }
